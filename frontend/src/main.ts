@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VueRouter from 'vue-router';
 import Web3 from 'web3';
 import { createStore } from './store';
+import { createRouter } from './router';
 import App from './App.vue';
 import VTooltip from 'v-tooltip';
 import BootstrapVue from 'bootstrap-vue';
@@ -18,6 +20,7 @@ const web3 = new Web3(Web3.givenProvider || process.env.VUE_APP_WEB3_FALLBACK_PR
 Vue.config.productionTip = false;
 
 Vue.use(Vuex);
+Vue.use(VueRouter);
 Vue.use(VTooltip);
 Vue.use(BootstrapVue);
 
@@ -25,10 +28,11 @@ const VueDragula = require('vue-dragula');
 Vue.use(VueDragula);
 
 const store = createStore(web3);
+const router = createRouter();
 
 new Vue({
   render: h => h(App),
-  store,
+  router, store,
   provide: {
     web3,
     expectedNetworkId,

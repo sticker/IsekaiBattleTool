@@ -1,70 +1,70 @@
 <template>
   <div class="wrapper">
     <nav-bar />
-  <div class="row mt-3">
-  <div class="col col-sm-4 col-md-4 col-lg-4 ml-5 mr-3 nes-container with-title is-centered">
-    <p class="title">Your Characters</p>
-    <ul class="character-list owned" v-dragula="ownedCharacters" bag="party-bag">
-      <li
-        class=""
-        v-for="c in ownedCharacters"
-        :key="c.tokenId"
-        @click="$emit('input', c.tokenId)"
-      >
-        <img class="character-img nes-pointer"
-          :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
-          v-tooltip.right="detailTooltipHtml(c)" />
-      </li>
-    </ul>
-  </div>
-  <div class="col">
-  <div class="nes-container with-title is-centered party">
-    <p class="title">Attack: {{ memberCount('attack') }}</p>
-    <ul class="character-list attack" v-dragula="attackCharacters" bag="party-bag">
-      <li
-        class=""
-        v-for="c in attackCharacters"
-        :key="c.tokenId"
-        @click="$emit('input', c.tokenId)"
-      >
-        <img class="character-img nes-pointer"
-          :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
-          v-tooltip.right="detailTooltipHtml(c)" />
-      </li>
-    </ul>
-  </div>
-  <div class="nes-container with-title is-centered party mt-5">
-    <p class="title">Deffence: {{ memberCount('defence') }}</p>
-    <ul class="character-list defence" v-dragula="defenceCharacters" bag="party-bag">
-      <li
-        class=""
-        v-for="c in defenceCharacters"
-        :key="c.tokenId"
-        @click="$emit('input', c.tokenId)"
-      >
-        <img class="character-img nes-pointer"
-          :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
-          v-tooltip.right="detailTooltipHtml(c)" />
-      </li>
-    </ul>
-  </div>
-  <div class="nes-container with-title is-centered party mt-5">
-    <p class="title">Explore: {{ memberCount('explore') }}</p>
-    <ul class="character-list explore" v-dragula="exploreCharacters" bag="party-bag">
-      <li
-        class=""
-        v-for="c in exploreCharacters"
-        :key="c.tokenId"
-        @click="$emit('input', c.tokenId)"
-      >
-        <img class="character-img nes-pointer"
-          :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
-          v-tooltip.right="detailTooltipHtml(c)" />
-      </li>
-    </ul>
-  </div>
-  </div>
-  </div>
+    <div class="row mt-3">
+      <div class="col col-sm-4 col-md-4 col-lg-4 ml-5 mr-3 nes-container with-title is-centered">
+        <p class="title">Your Characters</p>
+        <ul class="character-list owned" v-dragula="ownedCharacters" bag="party-bag">
+          <li
+            class=""
+            v-for="c in ownedCharacters"
+            :key="c.tokenId"
+            @click="$emit('input', c.tokenId)"
+          >
+            <img class="character-img nes-pointer"
+              :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
+              v-tooltip.right="detailTooltipHtml(c)" />
+          </li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="nes-container with-title is-centered party">
+          <p class="title">Attack: {{ memberCount('attack') }}</p>
+          <ul class="character-list attack" v-dragula="attackCharacters" bag="party-bag">
+            <li
+              class=""
+              v-for="c in attackCharacters"
+              :key="c.tokenId"
+              @click="$emit('input', c.tokenId)"
+            >
+              <img class="character-img nes-pointer"
+                :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
+                v-tooltip.right="detailTooltipHtml(c)" />
+            </li>
+          </ul>
+        </div>
+        <div class="nes-container with-title is-centered party mt-5">
+          <p class="title">Deffence: {{ memberCount('defence') }}</p>
+          <ul class="character-list defence" v-dragula="defenceCharacters" bag="party-bag">
+            <li
+              class=""
+              v-for="c in defenceCharacters"
+              :key="c.tokenId"
+              @click="$emit('input', c.tokenId)"
+            >
+              <img class="character-img nes-pointer"
+                :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
+                v-tooltip.right="detailTooltipHtml(c)" />
+            </li>
+          </ul>
+        </div>
+        <div class="nes-container with-title is-centered party mt-5">
+          <p class="title">Explore: {{ memberCount('explore') }}</p>
+          <ul class="character-list explore" v-dragula="exploreCharacters" bag="party-bag">
+            <li
+              class=""
+              v-for="c in exploreCharacters"
+              :key="c.tokenId"
+              @click="$emit('input', c.tokenId)"
+            >
+              <img class="character-img nes-pointer"
+                :src="require(`@/assets/character/${ c.name.split(' ')[0] }.png`)"
+                v-tooltip.right="detailTooltipHtml(c)" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

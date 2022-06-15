@@ -12,6 +12,11 @@
         @click="onUpdateAccount()">
         GO
       </button>
+      <div class="discord-login ml-auto d-none d-sm-flex">
+        <div v-if="haveOgRole" class="role">game-guild-OG</div>
+        <div v-if="roles.length > 0" class="roles">{{ roles }}</div>
+        <img src="@/assets/Discord-Logo-Color.png" class="discord-icon nes-pointer" @click="onLoginDiscord()"/>
+      </div>
     </b-navbar>
 
   </div>
@@ -19,6 +24,8 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex';
+import axios from 'axios';
+import * as querystring from 'querystring';
 
 export default {
   inject: ['web3', 'expectedNetworkId'],
@@ -26,6 +33,8 @@ export default {
   data: () => ({
     inputAddress: '',
     enableWallet: false,
+    haveOgRole: false,
+    roles: [],
   }),
 
   computed: {
@@ -42,6 +51,18 @@ export default {
         this.updateDefaultAccount(this.inputAddress);
         this.fetchUserDetails();
       }
+    },
+
+    async onLoginDiscord() {
+      const params = {
+        client_id: process.env.VUE_APP_DISCORD_CLIENT_ID,
+        redirect_uri: process.env.VUE_APP_BASE_URL,
+        response_type: 'code',
+        scope: 'identify guilds guilds.members.read',
+      };
+      const redirect_uri = 'https://discord.com/api/oauth2/authorize?' + querystring.stringify(params);
+      console.log(redirect_uri);
+      window.location.href = redirect_uri;
     },
 
     async configureMetaMask() {
@@ -117,6 +138,31 @@ export default {
     }
     await this.configureMetaMask();
   },
+
+  async mounted() {
+    this.$nextTick(async function () {
+      if (this.$route.query.code !== undefined) {
+        const headers = {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        };
+        const params = {
+          client_id: process.env.VUE_APP_DISCORD_CLIENT_ID,
+          client_secret: process.env.VUE_APP_DISCORD_CLIENT_SECRET,
+          grant_type: 'authorization_code',
+          code: this.$route.query.code,
+          redirect_uri: process.env.VUE_APP_BASE_URL,
+        };
+        const res = await axios.post('https://discord.com/api/oauth2/token', querystring.stringify(params), { headers },);
+        headers.Authorization = `Bearer ${res.data.access_token}`;
+        const ret = await axios.get('https://discordapp.com/api/users/@me/guilds/900029842450415636/member', { headers });
+        if(ret.data.roles.includes('983203802524049408')) {
+          console.log('You have game-guild-OG roll!!');
+          this.haveOgRole = true;
+        }
+        this.roles = ret.data.roles;
+      }
+    });
+  },
 };
 </script>
 
@@ -125,6 +171,31 @@ export default {
   width: 750px;
 
 }
+
+.discord-login {
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.discord-icon {
+  height: 50px;
+}
+
+
+
+.role {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.roles {
+  width: 250px;
+  align-items: center;
+  font-size: xx-small;
+}
+
 
 a {
   text-decoration: none;

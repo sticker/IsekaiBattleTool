@@ -50,7 +50,7 @@ export function createStore(web3: Web3) {
     actions: {
       async initialize({ dispatch }) {
         await dispatch('setUpContracts');
-        await dispatch('pollNetwork');
+        // await dispatch('pollNetwork');
       },
 
       async setUpContracts({ commit }) {
