@@ -14,7 +14,6 @@
       </button>
       <div class="discord-login ml-auto d-none d-sm-flex">
         <div v-if="haveOgRole" class="role">game-guild-OG</div>
-        <div v-if="roles.length > 0" class="roles">{{ roles }}</div>
         <img src="@/assets/Discord-Logo-Color.png" class="discord-icon nes-pointer" @click="onLoginDiscord()"/>
       </div>
     </b-navbar>
@@ -34,7 +33,6 @@ export default {
     inputAddress: '',
     enableWallet: false,
     haveOgRole: false,
-    roles: [],
   }),
 
   computed: {
@@ -159,7 +157,6 @@ export default {
           console.log('You have game-guild-OG roll!!');
           this.haveOgRole = true;
         }
-        this.roles = ret.data.roles;
       }
     });
   },
