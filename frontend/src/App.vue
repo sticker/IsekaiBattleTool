@@ -32,8 +32,11 @@
                 v-tooltip.right="detailTooltipHtml(c)" />
             </li>
           </ul>
+          <div class="total-power">
+            Total ATK: {{ getTotalATK(attackCharacters) }}
+          </div>
         </div>
-        <div class="nes-container with-title is-centered party mt-5">
+        <div class="nes-container with-title is-centered party mt-4">
           <p class="title">Deffence: {{ memberCount('defence') }}</p>
           <ul class="character-list defence" v-dragula="defenceCharacters" bag="party-bag">
             <li
@@ -47,9 +50,12 @@
                 v-tooltip.right="detailTooltipHtml(c)" />
             </li>
           </ul>
+          <div class="total-power">
+            Total DEF: {{ getTotalDEF(defenceCharacters) }}
+          </div>
         </div>
-        <div class="nes-container with-title is-centered party mt-5">
-          <p class="title">Explore: {{ memberCount('explore') }}</p>
+        <div class="nes-container with-title is-centered party mt-4">
+          <p class="title">Explore</p>
           <ul class="character-list explore" v-dragula="exploreCharacters" bag="party-bag">
             <li
               class=""
@@ -62,9 +68,13 @@
                 v-tooltip.right="detailTooltipHtml(c)" />
             </li>
           </ul>
+          <div class="total-power">
+            Total LUK: {{ getTotalLUK(exploreCharacters) }}
+          </div>
         </div>
       </div>
     </div>
+    <equipments></equipments>
   </div>
 </template>
 
@@ -72,11 +82,13 @@
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import NavBar from './components/NavBar.vue';
+import Equipments from './components/Equipments.vue';
 
 export default {
   inject: ['web3'],
   components: {
     NavBar,
+    Equipments,
   },
 
   data: () => ({
@@ -87,7 +99,7 @@ export default {
   }),
 
   computed: {
-    ...mapState(['defaultAccount', 'ownedCharacters']),
+    ...mapState(['defaultAccount', 'ownedCharacters', 'ownedWeapons', 'ownedArmors']),
 
     detailTooltipHtml() {
       return function(c) {
@@ -121,6 +133,40 @@ export default {
   },
 
   methods: {
+    getTotalATK(party) {
+      let total = 0;
+      for(let i = 0; i < party.length; i++) {
+        const equipments = this.ownedWeapons.filter((e) => e.name === party[i].Weapon);
+        console.log(equipments);
+        equipments.forEach(e => {
+          total += party[i].ATK * e.level * (Number(e.hold) + 1);
+        });
+      }
+      return total;
+
+    },
+    getTotalDEF(party) {
+      let total = 0;
+      for(let i = 0; i < party.length; i++) {
+        const equipments = this.ownedArmors.filter((e) => e.name === party[i].Armor);
+        equipments.forEach(e => {
+          total += party[i].DEF * e.level * (Number(e.hold) + 1);
+        });
+      }
+      return total;
+
+    },
+    getTotalLUK(party) {
+      let total = 0;
+      for(let i = 0; i < party.length; i++) {
+        total += party[i].LUK;
+      }
+      return total;
+
+    },
+    autoParty() {
+
+    }
   },
 
   created: () => {
@@ -135,7 +181,7 @@ export default {
 
 .party {
   width: 508px;
-  height: 161px;
+  height: 175px;
 }
 .character.selected {
   box-shadow: 0 0 30px #4faaff;

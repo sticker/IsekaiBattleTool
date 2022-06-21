@@ -7,4 +7,6 @@ export interface IState {
   currentNetworkId: number | null;
   isekaiBattle: Contract | null;
   ownedCharacters: ICharacter[],
+  ownedWeapons: ICharacter[],
+  ownedArmors: ICharacter[],
 }

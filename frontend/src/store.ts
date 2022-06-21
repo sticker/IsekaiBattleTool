@@ -15,6 +15,8 @@ export function createStore(web3: Web3) {
       currentNetworkId: null,
       isekaiBattle: null,
       ownedCharacters: [],
+      ownedWeapons: [],
+      ownedArmors: [],
     },
 
     mutations: {
@@ -45,12 +47,21 @@ export function createStore(web3: Web3) {
         state.ownedCharacters = ownedCharacters;
       },
 
+      updateOwnedWeapons(state: IState, { ownedWeapons }) {
+        state.ownedWeapons = ownedWeapons;
+      },
+
+      updateOwnedArmors(state: IState, { ownedArmors }) {
+        state.ownedArmors = ownedArmors;
+      },
+
     },
 
     actions: {
       async initialize({ dispatch }) {
         await dispatch('setUpContracts');
         // await dispatch('pollNetwork');
+        dispatch('initEquipments');
       },
 
       async setUpContracts({ commit }) {
@@ -88,6 +99,59 @@ export function createStore(web3: Web3) {
           ]);
         }
 
+      },
+
+      initEquipments({commit}) {
+        console.log('initEquipments!');
+        const equipments = require('@/assets/equipment/equipments.js');
+        const ownedWeapons = [];
+        const ownedArmors = [];
+        for(let i = 0; i < equipments.default.weapons.length; i++) {
+          const weapon = equipments.default.weapons[i];
+          ownedWeapons.push({
+            name: weapon.name,
+            image: weapon.image,
+            level: 1,
+            hold: 0,
+          });
+          ownedWeapons.push({
+            name: weapon.name,
+            image: weapon.image,
+            level: 2,
+            hold: 0,
+          });
+          ownedWeapons.push({
+            name: weapon.name,
+            image: weapon.image,
+            level: 3,
+            hold: 0,
+          });
+        }
+        for(let i = 0; i < equipments.default.armors.length; i++) {
+          const armor = equipments.default.armors[i];
+          ownedArmors.push({
+            name: armor.name,
+            image: armor.image,
+            level: 1,
+            hold: 0,
+          });
+          ownedArmors.push({
+            name: armor.name,
+            image: armor.image,
+            level: 2,
+            hold: 0,
+          });
+          ownedArmors.push({
+            name: armor.name,
+            image: armor.image,
+            level: 3,
+            hold: 0,
+          });
+        }
+        console.log(ownedWeapons);
+        console.log(ownedArmors);
+        commit('updateOwnedWeapons', { ownedWeapons });
+        commit('updateOwnedArmors', { ownedArmors });
       },
 
       async fetchUserDetails({ dispatch }) {
