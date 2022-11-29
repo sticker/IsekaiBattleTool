@@ -11,13 +11,13 @@ const Moralis = require("moralis/node");
 
 const isekaiBattle = require("../abi/IsekaiBattle.json");
 const isekaiBattleAbi = isekaiBattle.abi;
+
 const isekaiBattleStake = require("../abi/IsekaiBattleStake.json");
 const isekaiBattleStakeAbi = isekaiBattleStake.abi;
 
 const serverUrl = process.env.VUE_APP_MORALIS_SERVER_URL;
 const appId = process.env.VUE_APP_MORALIS_APP_ID;
 const moralisSecret = process.env.VUE_APP_MORALIS_SECRET;
-const moralisChain = process.env.VUE_APP_MORALIS_CHAIN;
 
 const main = async () => {
   const argv = yargs(process.argv.slice(2))
@@ -40,48 +40,26 @@ const main = async () => {
 
   const isekaiBattleAddr = process.env.ISEKAI_BATTLE_CONTRACT_ADDRESS;
   const IsekaiBattle = new web3.eth.Contract(isekaiBattleAbi, isekaiBattleAddr);
+
   const isekaiBattleStakeAddr = process.env.ISEKAI_BATTLE_STAKE_CONTRACT_ADDRESS;
   const IsekaiBattleStake = new web3.eth.Contract(isekaiBattleStakeAbi, isekaiBattleStakeAddr);
 
-  await Moralis.start({ serverUrl, appId, moralisSecret });
-  // console.log(accounts[0]);
-  // console.log(process.env.ISEKAI_BATTLE_CONTRACT_ADDRESS);
-  console.log({
-    address,
-    token_address: process.env.ISEKAI_BATTLE_CONTRACT_ADDRESS,
-    chain: moralisChain,
-  });
-  const nfts = await Moralis.Web3API.account.getNFTsForContract({
-    address,
-    token_address: process.env.ISEKAI_BATTLE_CONTRACT_ADDRESS,
-    chain: moralisChain,
-  });
-  logger.info(nfts);
+  const ret = await IsekaiBattle.methods.getSeedHistory(911).call();
+  console.log(ret);
 
-  const tokenIds = [];
-  for(let i = 0; i < nfts.result.length; i++) {
-    tokenIds.push(nfts.result[i].token_id);
-  }
+  const regionInfo = await IsekaiBattleStake.methods.regionInfos(0).call();
+  console.log(regionInfo);
 
-  const regionId = 0;
-  const stakingTokenIdsLength = await IsekaiBattleStake.methods.stakingTokenIdsLength(
-    address, regionId).call({from: accounts[0]});
+  const stakingInfos = await IsekaiBattleStake.methods.stakingInfos('0x05649549c574AaF1382E1eD925dc59DfdF588A23').call();
+  console.log(stakingInfos);
+
+  const getEstimate = await IsekaiBattleStake.methods.getEstimate().call({from: '0x05649549c574AaF1382E1eD925dc59DfdF588A23'});
+  console.log(getEstimate);
+
+  const stakingTokenIdsLength = await IsekaiBattleStake.methods.stakingTokenIdsLength('0x05649549c574AaF1382E1eD925dc59DfdF588A23', 0).call({from: '0x05649549c574AaF1382E1eD925dc59DfdF588A23'});
   for(let i = 0; i < stakingTokenIdsLength; i++) {
-    const stakingTokenIds = await IsekaiBattleStake.methods.stakingTokenIds(address, regionId, i).call({from: accounts[0]});
-    tokenIds.push(stakingTokenIds);
-  }
-  for(let i = 0; i < tokenIds.length; i++) {
-    let res = await IsekaiBattle.methods.tokenURI(tokenIds[i]).call({from: accounts[0]});
-    let metadataBase64 = res.substr(res.indexOf('base64,')+7)
-    let metadata = JSON.parse(atob(metadataBase64))
-    let attr = metadata.attributes
-    for(let j = 0; j < attr.length; j++) {
-      if(j === 0) {
-        process.stdout.write(`${tokenIds[i]},`)
-      }
-      process.stdout.write(`${attr[j].value},`)
-    }
-    process.stdout.write('\n');
+    const stakingTokenIds = await IsekaiBattleStake.methods.stakingTokenIds('0x05649549c574AaF1382E1eD925dc59DfdF588A23', 0, i).call({from: '0x05649549c574AaF1382E1eD925dc59DfdF588A23'});
+    console.log(stakingTokenIds);
   }
 };
 

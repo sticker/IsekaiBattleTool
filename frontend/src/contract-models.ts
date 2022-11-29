@@ -1,4 +1,4 @@
-import { ICharacter } from './interfaces';
+import { ICharacter, IWeapon, IArmor } from './interfaces';
 
 export function characterFromContract(tokenId: number, metadataJson: any): ICharacter {
   const name = metadataJson.name;
@@ -45,4 +45,36 @@ export function characterFromContract(tokenId: number, metadataJson: any): IChar
   }
   return { tokenId, name, image, GenerationType, Weapon, Armor, Sex, Species, Heritage,
     Personality, UsedSeed, Level, ATK, DEF, LUK };
+}
+
+export function weaponFromContract(metadataJson: any, hold: number): IWeapon {
+  const name = metadataJson.name;
+  const image = metadataJson.image;
+  let Lv;
+  let Type;
+  const attr = metadataJson.attributes;
+  for(let i = 0; i < attr.length; i++) {
+    if(attr[i].trait_type === 'Lv') {
+      Lv = attr[i].value;
+    } else if(attr[i].trait_type === 'Type') {
+      Type = attr[i].value;
+    }
+  }
+  return { name, image, Lv, Type, hold };
+}
+
+export function armorFromContract(metadataJson: any, hold: number): IArmor {
+  const name = metadataJson.name;
+  const image = metadataJson.image;
+  let Lv;
+  let Type;
+  const attr = metadataJson.attributes;
+  for(let i = 0; i < attr.length; i++) {
+    if(attr[i].trait_type === 'Lv') {
+      Lv = attr[i].value;
+    } else if(attr[i].trait_type === 'Type') {
+      Type = attr[i].value;
+    }
+  }
+  return { name, image, Lv, Type, hold };
 }

@@ -136,10 +136,10 @@ export default {
     getTotalATK(party) {
       let total = 0;
       for(let i = 0; i < party.length; i++) {
-        const equipments = this.ownedWeapons.filter((e) => e.name === party[i].Weapon);
+        const equipments = this.ownedWeapons.filter((e) => e.Type === party[i].Weapon);
         console.log(equipments);
         equipments.forEach(e => {
-          total += party[i].ATK * e.level * (Number(e.hold) + 1);
+          total += party[i].ATK * e.Lv * (Number(e.hold) + 1);
         });
       }
       return total;
@@ -148,9 +148,9 @@ export default {
     getTotalDEF(party) {
       let total = 0;
       for(let i = 0; i < party.length; i++) {
-        const equipments = this.ownedArmors.filter((e) => e.name === party[i].Armor);
+        const equipments = this.ownedArmors.filter((e) => e.Type === party[i].Armor);
         equipments.forEach(e => {
-          total += party[i].DEF * e.level * (Number(e.hold) + 1);
+          total += party[i].DEF * e.Lv * (Number(e.hold) + 1);
         });
       }
       return total;

@@ -17,7 +17,7 @@
                   {{ e.name }}:
                 <div class="weapon" v-if="ownedWeapons && ownedWeapons.length > 0">
                   <input type="text" class="input-param"
-                    v-model="ownedWeapons.filter((w) => w.name === e.name && w.level === 1)[0].hold" />
+                    v-model="ownedWeapons.filter((w) => w.Type === e.name && w.Lv === 1)[0].hold" />
                 </div>
               </li>
             </ul>
@@ -35,7 +35,7 @@
                   {{ e.name }}:
                 <div class="weapon" v-if="ownedWeapons && ownedWeapons.length > 0">
                   <input type="text" class="input-param"
-                    v-model="ownedWeapons.filter((w) => w.name === e.name && w.level === 2)[0].hold" />
+                    v-model="ownedWeapons.filter((w) => w.Type === e.name && w.Lv === 2)[0].hold" />
                 </div>
               </li>
             </ul>
@@ -53,7 +53,7 @@
                   {{ e.name }}:
                 <div class="weapon" v-if="ownedWeapons && ownedWeapons.length > 0">
                   <input type="text" class="input-param"
-                    v-model="ownedWeapons.filter((w) => w.name === e.name && w.level === 3)[0].hold" />
+                    v-model="ownedWeapons.filter((w) => w.Type === e.name && w.Lv === 3)[0].hold" />
                 </div>
               </li>
             </ul>
@@ -78,7 +78,7 @@
                   {{ e.name }}:
                 <div class="weapon" v-if="ownedArmors && ownedArmors.length > 0">
                   <input type="text" class="input-param"
-                    v-model="ownedArmors.filter((w) => w.name === e.name && w.level === 1)[0].hold" />
+                    v-model="ownedArmors.filter((w) => w.Type === e.name && w.Lv === 1)[0].hold" />
                 </div>
               </li>
             </ul>
@@ -96,7 +96,7 @@
                   {{ e.name }}:
                 <div class="weapon" v-if="ownedArmors && ownedArmors.length > 0">
                   <input type="text" class="input-param"
-                    v-model="ownedArmors.filter((w) => w.name === e.name && w.level === 2)[0].hold" />
+                    v-model="ownedArmors.filter((w) => w.Type === e.name && w.Lv === 2)[0].hold" />
                 </div>
               </li>
             </ul>
@@ -114,7 +114,7 @@
                   {{ e.name }}:
                 <div class="weapon" v-if="ownedArmors && ownedArmors.length > 0">
                   <input type="text" class="input-param"
-                    v-model="ownedArmors.filter((w) => w.name === e.name && w.level === 3)[0].hold" />
+                    v-model="ownedArmors.filter((w) => w.Type === e.name && w.Lv === 3)[0].hold" />
                 </div>
               </li>
             </ul>

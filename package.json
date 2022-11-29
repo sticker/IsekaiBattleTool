@@ -19,7 +19,8 @@
     "abdk-libraries-solidity": "^2.4.0",
     "censor-sensor": "^1.0.6",
     "dotenv": "^8.2.0",
-    "moralis": "^1.8.0"
+    "moment": "^2.29.4",
+    "moralis": "^1.10.1"
   },
   "devDependencies": {
     "@truffle/config": "^1.2.41",

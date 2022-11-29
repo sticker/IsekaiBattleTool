@@ -3,7 +3,7 @@ const Moralis = require('moralis/node');
 const serverUrl = process.env.VUE_APP_MORALIS_SERVER_URL;
 const appId = process.env.VUE_APP_MORALIS_APP_ID;
 const moralisSecret = process.env.VUE_APP_MORALIS_SECRET;
-const chain = 'eth';
+const chain = process.env.VUE_APP_MORALIS_CHAIN;
 let isStarted = false;
 
 export const start = async () => {
@@ -31,4 +31,20 @@ export const getTokenIds = async (address: string, token_address: string ) => {
     tokenIds.push(nfts.result[i].token_id);
   }
   return tokenIds;
+};
+
+export const getNfts = async (address: string, token_address: string ) => {
+  if(!isStarted) await start();
+
+  console.log({address});
+  console.log({token_address});
+  console.log({chain});
+  const nfts = await Moralis.Web3API.account.getNFTsForContract({
+    address,
+    token_address,
+    chain,
+  });
+  console.log(nfts.result);
+
+  return nfts.result;
 };

@@ -2,6 +2,7 @@
 export interface IWeapon {
   name: string;
   image: string;
-  level: number;
+  Lv: number;
+  Type: string;
   hold: number;
 }

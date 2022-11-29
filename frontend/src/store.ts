@@ -4,8 +4,8 @@ import _ from 'lodash';
 
 import { setUpContracts } from './contracts';
 import { IState } from './interfaces';
-import { getTokenIds } from './api/moralis';
-import { characterFromContract } from './contract-models';
+import { getTokenIds, getNfts } from './api/moralis';
+import { characterFromContract, weaponFromContract, armorFromContract } from './contract-models';
 
 export function createStore(web3: Web3) {
   return new Vuex.Store<IState>({
@@ -14,6 +14,7 @@ export function createStore(web3: Web3) {
       defaultAccount: null,
       currentNetworkId: null,
       isekaiBattle: null,
+      isekaiBattleStake: null,
       ownedCharacters: [],
       ownedWeapons: [],
       ownedArmors: [],
@@ -37,6 +38,10 @@ export function createStore(web3: Web3) {
 
       setIsekaiBattle(state: IState, payload) {
         state.isekaiBattle = payload;
+      },
+
+      setIsekaiBattleStake(state: IState, payload) {
+        state.isekaiBattleStake = payload;
       },
 
       updateDefaultAccount(state: IState, account) {
@@ -65,8 +70,9 @@ export function createStore(web3: Web3) {
       },
 
       async setUpContracts({ commit }) {
-        const isekaiBattle = await setUpContracts(web3);
-        commit('setIsekaiBattle', isekaiBattle);
+        const contracts = await setUpContracts(web3);
+        commit('setIsekaiBattle', contracts.IsekaiBattle);
+        commit('setIsekaiBattleStake', contracts.IsekaiBattleStake);
       },
 
       async pollNetwork({ state, commit }) {
@@ -111,19 +117,22 @@ export function createStore(web3: Web3) {
           ownedWeapons.push({
             name: weapon.name,
             image: weapon.image,
-            level: 1,
+            Lv: 1,
+            Type: weapon.name,
             hold: 0,
           });
           ownedWeapons.push({
             name: weapon.name,
             image: weapon.image,
-            level: 2,
+            Lv: 2,
+            Type: weapon.name,
             hold: 0,
           });
           ownedWeapons.push({
             name: weapon.name,
             image: weapon.image,
-            level: 3,
+            Lv: 3,
+            Type: weapon.name,
             hold: 0,
           });
         }
@@ -132,19 +141,22 @@ export function createStore(web3: Web3) {
           ownedArmors.push({
             name: armor.name,
             image: armor.image,
-            level: 1,
+            Lv: 1,
+            Type: armor.name,
             hold: 0,
           });
           ownedArmors.push({
             name: armor.name,
             image: armor.image,
-            level: 2,
+            Lv: 2,
+            Type: armor.name,
             hold: 0,
           });
           ownedArmors.push({
             name: armor.name,
             image: armor.image,
-            level: 3,
+            Lv: 3,
+            Type: armor.name,
             hold: 0,
           });
         }
@@ -156,13 +168,22 @@ export function createStore(web3: Web3) {
 
       async fetchUserDetails({ dispatch }) {
         await dispatch('fetchCharacters');
+        await dispatch('fetchWeapons');
+        await dispatch('fetchArmors');
       },
 
       async fetchCharacters({ state, commit }) {
-        if(!state.defaultAccount || !state.isekaiBattle) return;
+        if(!state.defaultAccount || !state.isekaiBattle || !state.isekaiBattleStake) return;
         console.log(process.env.VUE_APP_ISEKAI_BATTLE_CONTRACT_ADDRESS);
         const tokenIds = await getTokenIds(state.defaultAccount, process.env.VUE_APP_ISEKAI_BATTLE_CONTRACT_ADDRESS as string);
         console.log({tokenIds});
+        const regionId = 0;
+        const stakingTokenIdsLength = await state.isekaiBattleStake.methods.stakingTokenIdsLength(
+          state.defaultAccount, regionId).call({from: state.defaultAccount});
+        for(let i = 0; i < stakingTokenIdsLength; i++) {
+          const stakingTokenIds = await state.isekaiBattleStake.methods.stakingTokenIds(state.defaultAccount, regionId, i).call({from: state.defaultAccount});
+          tokenIds.push(stakingTokenIds);
+        }
         const ownedCharacters = [];
         for(let i = 0; i < tokenIds.length; i++) {
           const res = await state.isekaiBattle.methods.tokenURI(tokenIds[i]).call({from: state.defaultAccount});
@@ -171,6 +192,43 @@ export function createStore(web3: Web3) {
           const character = characterFromContract(tokenIds[i], metadata);
           ownedCharacters.push(character);
           commit('updateOwnedCharacters', { ownedCharacters });
+        }
+      },
+
+      async fetchWeapons({ state, commit }) {
+        if(!state.defaultAccount || !state.isekaiBattle) return;
+        console.log(process.env.VUE_APP_ISEKAI_BATTLE_WEAPON_CONTRACT_ADDRESS);
+        const nfts = await getNfts(state.defaultAccount, process.env.VUE_APP_ISEKAI_BATTLE_WEAPON_CONTRACT_ADDRESS as string);
+        const ownedWeapons = state.ownedWeapons;
+        for(let i = 0; i < nfts.length; i++) {
+          const metadata = JSON.parse(nfts[i].metadata);
+          const weapon = weaponFromContract(metadata, Number(nfts[i].amount));
+          for(let j = 0; j < ownedWeapons.length; j++) {
+            console.log(ownedWeapons[j]);
+            if(ownedWeapons[j].name === weapon.Type && ownedWeapons[j].Lv === weapon.Lv) {
+              ownedWeapons[j].hold = weapon.hold;
+              console.log('update!', weapon.hold);
+            }
+          }
+          console.log(ownedWeapons);
+          commit('updateOwnedWeapons', { ownedWeapons });
+        }
+      },
+
+      async fetchArmors({ state, commit }) {
+        if(!state.defaultAccount || !state.isekaiBattle) return;
+        console.log(process.env.VUE_APP_ISEKAI_BATTLE_ARMOR_CONTRACT_ADDRESS);
+        const nfts = await getNfts(state.defaultAccount, process.env.VUE_APP_ISEKAI_BATTLE_ARMOR_CONTRACT_ADDRESS as string);
+        const ownedArmors = state.ownedArmors;
+        for(let i = 0; i < nfts.length; i++) {
+          const metadata = JSON.parse(nfts[i].metadata);
+          const armor = armorFromContract(metadata, Number(nfts[i].amount));
+          for(let j = 0; j < ownedArmors.length; j++) {
+            if(ownedArmors[j].name === armor.Type && ownedArmors[j].Lv === armor.Lv) {
+              ownedArmors[j].hold = armor.hold;
+            }
+          }
+          commit('updateOwnedArmors', { ownedArmors });
         }
       },
 

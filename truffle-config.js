@@ -29,6 +29,14 @@ module.exports = {
       timeoutBlocks: 200,
       skipDryRun: true
     },
+
+    testnet: {
+      provider: () => new HDWalletProvider(process.env.ADMIN_WALLET_MNEMONIC, `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`),
+      network_id: 4,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
