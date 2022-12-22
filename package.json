@@ -41,6 +41,12 @@
     "truffle-plugin-verify": "^0.5.7",
     "ts-mocha": "^9.0.2",
     "typescript": "^4.3.5",
-    "yargs": "^17.0.1"
+    "yargs": "^17.0.1",
+    "axios": "^1.2.1",
+    "dotenv": "^8.2.0",
+    "moment": "^2.29.4",
+    "moralis": "^2.8.2",
+    "quickchart-js": "^3.1.1",
+    "web3": "^1.7.4"
   }
 }
