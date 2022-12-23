@@ -24,5 +24,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Install
+      run: npm install
     - name: Report seeds holder
       run: node scripts/report-seeds.js
