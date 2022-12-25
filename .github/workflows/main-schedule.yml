@@ -28,3 +28,9 @@ jobs:
       run: npm install
     - name: Report seeds holder
       run: node scripts/report-seeds.js
+      env:
+        MORALIS_API_KEY: ${{ secrets.MORALIS_API_KEY }}
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        RPC_URL: ${{ secrets.RPC_URL }}
+        MORALIS_CHAIN: ${{ secrets.MORALIS_CHAIN }}
+        ISEKAI_BATTLE_SEEDS_CONTRACT_ADDRESS: ${{ secrets.ISEKAI_BATTLE_SEEDS_CONTRACT_ADDRESS }}
