@@ -5,7 +5,6 @@ const log4js = require("log4js");
 logger = log4js.getLogger();
 logger.level = "all";
 const axios = require('axios')
-const QuickChart = require('quickchart-js');
 const Moralis = require("moralis").default;
 const { EvmChain } = require("@moralisweb3/common-evm-utils");
 
@@ -65,6 +64,9 @@ const main = async () => {
   output.push(' ');
   output.push('■合計保有数');
 
+  const fields = [];
+  fields.push({name: '全種数', value: `${allAmount} (ATK:${atkAmount} DEF:${defAmount} LUK:${lukAmount})`, inline: true})
+
   // アドレスごとに保持数を集計
   // {address1: num1, address2: num2, ...}
   let count = results.reduce(function(prev, current) {
@@ -79,20 +81,23 @@ const main = async () => {
     return prev;
   }, {});
 
+  const totalValue = [];
   // 保持数ごとのアドレス数を表示
   Object.keys(holder_count).forEach(function (key) {
     output.push(`${key}個: ${holder_count[key]}`);
+    totalValue.push(`${key}個: ${holder_count[key]}`);
   });
   output.push(' ');
+  fields.push({name: '合計保有数', value: totalValue.join('\n'), inline: false});
 
   // 種ごとに集計
   const results_atk = [];
   const results_def = [];
   const results_luk = [];
   for(let i = 0; i < results.length; i++) {
-    if(results[i].tokenId === '0') results_atk.push(results[i]);
-    if(results[i].tokenId === '10') results_def.push(results[i]);
-    if(results[i].tokenId === '20') results_luk.push(results[i]);
+    if(Number(results[i].tokenId) >= 0 && Number(results[i].tokenId) < 10) results_atk.push(results[i]);
+    if(Number(results[i].tokenId) >= 10 && Number(results[i].tokenId) < 20) results_def.push(results[i]);
+    if(Number(results[i].tokenId) >= 20 && Number(results[i].tokenId) < 30) results_luk.push(results[i]);
   }
   output.push('■ATK');
   // アドレスごとに保持数を集計
@@ -109,11 +114,15 @@ const main = async () => {
     return prev;
   }, {});
 
+  const atkValue = [];
   // 保持数ごとのアドレス数を表示
   Object.keys(holder_count_atk).forEach(function (key) {
     output.push(`${key}個: ${holder_count_atk[key]}`);
+    atkValue.push(`${key}個: ${holder_count_atk[key]}`);
   });
   output.push(' ');
+  fields.push({name: 'ATK種', value: atkValue.join('\n'), inline: true});
+
   output.push('■DEF');
   // アドレスごとに保持数を集計
   // {address1: num1, address2: num2, ...}
@@ -129,11 +138,15 @@ const main = async () => {
     return prev;
   }, {});
 
+  const defValue = [];
   // 保持数ごとのアドレス数を表示
   Object.keys(holder_count_def).forEach(function (key) {
     output.push(`${key}個: ${holder_count_def[key]}`);
+    defValue.push(`${key}個: ${holder_count_def[key]}`);
   });
   output.push(' ');
+  fields.push({name: 'DEF種', value: defValue.join('\n'), inline: true});
+
   output.push('■LUK');
   // アドレスごとに保持数を集計
   // {address1: num1, address2: num2, ...}
@@ -153,11 +166,14 @@ const main = async () => {
     return prev;
   }, {});
 
+  const lukValue = [];
   // 保持数ごとのアドレス数を表示
   Object.keys(holder_count_luk).forEach(function (key) {
     output.push(`${key}個: ${holder_count_luk[key]}`);
+    lukValue.push(`${key}個: ${holder_count_luk[key]}`);
   });
   output.push('==============================================');
+  fields.push({name: 'LUK種', value: lukValue.join('\n'), inline: true});
 
 
   const rank = Object.entries(count);
@@ -170,6 +186,7 @@ const main = async () => {
   let rankNum = 1;
   let amountNow = 0;
 
+  const rankingAll = [];
   outputRanking.push('合計保有数');
   for(let i = 0; i < rank.length; i++) {
     if (i > 0 && Number(rank[i][1]) < Number(amountNow)) {
@@ -177,10 +194,10 @@ const main = async () => {
     }
     if (rankNum > 5) break;
     outputRanking.push(`${rankNum}位: ${rank[i][1]}個 (${rank[i][0]})`);
+    rankingAll.push(`${rankNum}位: ${rank[i][1]}個 (${rank[i][0]})`);
     amountNow = Number(rank[i][1]);
   }
   outputRanking.push('==============================================');
-
 
   results_atk.sort((a,b) => {
     if (a.amount > b.amount ) return -1;
@@ -202,6 +219,7 @@ const main = async () => {
 
   rankNum = 1;
   amountNow = 0;
+  const rankingAtk = [];
   outputRanking.push('ATK種');
   for(let i = 0; i < results_atk.length; i++) {
     if (i > 0 && Number(results_atk[i].amount) < Number(amountNow)) {
@@ -209,6 +227,7 @@ const main = async () => {
     }
     if (rankNum > 5) break;
     outputRanking.push(`${rankNum}位: ${results_atk[i].amount}個 (${results_atk[i].ownerOf})`);
+    rankingAtk.push(`${rankNum}位: ${results_atk[i].amount}個 (${results_atk[i].ownerOf})`);
     amountNow = Number(results_atk[i].amount);
   }
 
@@ -216,6 +235,7 @@ const main = async () => {
 
   rankNum = 1;
   amountNow = 0;
+  const rankingDef = [];
   outputRanking.push('DEF種');
   for(let i = 0; i < results_def.length; i++) {
     if (i > 0 && Number(results_def[i].amount) < Number(amountNow)) {
@@ -223,6 +243,7 @@ const main = async () => {
     }
     if (rankNum > 5) break;
     outputRanking.push(`${rankNum}位: ${results_def[i].amount}個 (${results_def[i].ownerOf})`);
+    rankingDef.push(`${rankNum}位: ${results_def[i].amount}個 (${results_def[i].ownerOf})`);
     amountNow = Number(results_def[i].amount);
   }
 
@@ -230,6 +251,7 @@ const main = async () => {
 
   rankNum = 1;
   amountNow = 0;
+  const rankingLuk = [];
   outputRanking.push('LUK種');
   for(let i = 0; i < results_luk.length; i++) {
     if (i > 0 && Number(results_luk[i].amount) < Number(amountNow)) {
@@ -237,6 +259,7 @@ const main = async () => {
     }
     if (rankNum > 5) break;
     outputRanking.push(`${rankNum}位: ${results_luk[i].amount}個 (${results_luk[i].ownerOf})`);
+    rankingLuk.push(`${rankNum}位: ${results_luk[i].amount}個 (${results_luk[i].ownerOf})`);
     amountNow = Number(results_luk[i].amount);
   }
 
@@ -250,40 +273,55 @@ const main = async () => {
     }
   }
   // await axios.post(process.env.WEBHOOK_URL, {content: output.join("\n")}, config);
-  await axios.post(process.env.WEBHOOK_URL, {content: output.join("\n")}, config);
+  // await axios.post(process.env.WEBHOOK_URL, {content: output.join("\n")}, config);
+  let title = '種の保有者数';
+  let embeds = [{title, fields}]
+  await axios.post(process.env.WEBHOOK_URL, {embeds}, config);
+
+  // title = '種の合計保有数ランキング';
+  // await axios.post(process.env.WEBHOOK_URL, {content: `${title}\n` + '```' + rankingAll.join("\n") + '```'}, config);
+
+  // title = 'ATK種 保有数ランキング';
+  // await axios.post(process.env.WEBHOOK_URL, {content: `${title}\n` + '```' + rankingAtk.join("\n") + '```'}, config);
+
+  // title = 'DEF種 保有数ランキング';
+  // await axios.post(process.env.WEBHOOK_URL, {content: `${title}\n` + '```' + rankingDef.join("\n") + '```'}, config);
+
+  // title = 'LUK種 保有数ランキング';
+  // await axios.post(process.env.WEBHOOK_URL, {content: `${title}\n` + '```' + rankingLuk.join("\n") + '```'}, config);
 
   // Create the chart
-  const chart = new QuickChart();
-  chart.setConfig({
-    type: 'doughnut',
-    data: {
-      labels: ['ATK種', 'DEF種', 'LUK種'],
-      datasets: [{
-        data: [atkAmount, defAmount, lukAmount],
-        backgroundColor: ['#ff5656', '#ffb056', '#fff456']
-      }],
-    },
-    options: {
-      plugins: {
-        doughnutlabel: {
-          labels: [{ text: String(allAmount), font: { size:20 } }, { text: '合計' }]
-        }
-      }
-    },
-  });
+  // const chart = new QuickChart();
+  // chart.setConfig({
+  //   type: 'doughnut',
+  //   data: {
+  //     labels: ['ATK種', 'DEF種', 'LUK種'],
+  //     datasets: [{
+  //       data: [atkAmount, defAmount, lukAmount],
+  //       backgroundColor: ['#ff5656', '#ffb056', '#fff456']
+  //     }],
+  //   },
+  //   options: {
+  //     plugins: {
+  //       doughnutlabel: {
+  //         labels: [{ text: String(allAmount), font: { size:20 } }, { text: '合計' }]
+  //       }
+  //     }
+  //   },
+  // });
 
-  const chartEmbed = {
-    title: '全種数',
-    image: {
-      url: chart.getUrl(),
-    },
-  };
+  // const chartEmbed = {
+  //   title: '全種数',
+  //   image: {
+  //     url: chart.getUrl(),
+  //   },
+  // };
 
-  let data = {
-    embeds: [chartEmbed]
-  };
+  // let data = {
+  //   embeds: [chartEmbed]
+  // };
 
-  await axios.post(process.env.WEBHOOK_URL, data);
+  // await axios.post(process.env.WEBHOOK_URL, data);
 
 };
 
