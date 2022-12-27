@@ -92,8 +92,8 @@ const main = async () => {
 
   const results = [];
   const holders = [];
+  const stakingHolders = [];
   const tokenIds = [];
-  let charaStaking = 0;
 
   let cursor = null;
   do {
@@ -107,9 +107,9 @@ const main = async () => {
       results.push(response.result[i]._data);
       tokenIds.push(response.result[i]._data.tokenId);
       if(response.result[i]._data.ownerOf._value.toLocaleLowerCase() === isekaiBattleStakeAddr.toLocaleLowerCase()) {
-        charaStaking++;
         const tokenOwner = await IsekaiBattleStake.methods.tokenOwners(response.result[i]._data.tokenId).call();
         holders.push(tokenOwner);
+        stakingHolders.push(tokenOwner)
       } else {
         holders.push(response.result[i]._data.ownerOf._value);
       }
@@ -126,7 +126,7 @@ const main = async () => {
   console.log(s.size);
   console.log('==============================================');
 
-  logger.info('キャラステーキング数: ' + charaStaking);
+  logger.info('キャラステーキング数: ' + stakingHolders.length);
 
   // アドレスごとに保持数を集計
   // {address1: num1, address2: num2, ...}
@@ -157,6 +157,29 @@ const main = async () => {
       logger.info(`${value}体: ${key}`);
     }
   }
+
+  console.log('==============================================');
+
+  // アドレスごとにステーキング数を集計
+  // {address1: num1, address2: num2, ...}
+  let staking_count = stakingHolders.reduce(function(prev, current) {
+    prev[current] = (prev[current] || 0) + 1;
+    return prev;
+  }, {});
+
+  // ステーキング数ごとにアドレス数を集計
+  // {○体: ○件, ...}
+  const staking_holder_count = Object.values(staking_count).reduce(function(prev, current) {
+    prev[current] = (prev[current] || 0) + 1;
+    return prev;
+  }, {});
+
+  // console.log(holder_count);
+
+  // ステーキング数ごとのアドレス数を表示
+  Object.keys(staking_holder_count).forEach(function (key) {
+    logger.info(`${key}体: ${staking_holder_count[key]}`);
+  });
 
   console.log('==============================================');
 
